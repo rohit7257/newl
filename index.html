@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happy Birthday</title>
+
+<style>
+body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle, #ff9a9e, #fad0c4);
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.card {
+    background-color: white;
+    padding: 35px 50px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    z-index: 10;
+}
+
+h1, h2 {
+    color: #ff3f6c;
+    margin: 5px 0;
+    min-height: 1.5em;
+}
+
+p{
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ff3f6c;
+}
+
+.profile-pic {
+    width: 150px;
+    height: 150px;
+    margin: 10px auto;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 5px solid #ff3f6c;
+    box-shadow: 0 0 20px rgba(255,63,108,0.6);
+}
+
+.profile-pic img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cake {
+    font-size: 4em;
+    margin: 10px 0;
+    animation: bounce 2s infinite;
+}
+
+button {
+    padding: 12px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 20px;
+    background: #ff3f6c;
+    color: white;
+    cursor: pointer;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    to { transform: translateY(110vh) rotate(360deg); }
+}
+
+.firework {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: explode 1s ease-out forwards;
+}
+
+@keyframes explode {
+    to {
+        transform: translate(var(--x), var(--y));
+        opacity: 0;
+    }
+}
+
+@keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🎵 Music Files (Hidden, no controls) -->
+<audio id="music1" src="./sachink.mp3"></audio>
+<audio id="music2" src="./rttt.mp3"></audio>
+<audio id="music3" src="./birth.mp3"></audio>
+<audio id="music4" src="./krish.mp3"></audio> <!-- Extra song -->
+
+<div class="card">
+    <h1 id="typingText"></h1>
+
+    <div class="profile-pic">
+        <img src="sac.jpeg" alt="">
+    </div>
+
+    <h2 id="nameText"></h2>
+    <p>“Cheers on your birthday <br>Hope your special day brings<br> you all that your heart desires!</p>
+
+    <div class="cake">🎂</div>
+
+    <div>
+        <button onclick="startShow()">🎆 Start Celebration</button>
+    </div>
+
+    <div style="margin-top:15px;">
+        <button onclick="togglePlay()">▶️ Play / ⏸ Pause</button>
+        <div style="margin-top:10px;">
+            <button onclick="playExtraSong()">Krish ka Gana Sunega</button>
+        </div>
+    </div>
+</div>
+
+<script>
+const birthdayText = "🎉 Happy Birthday 🎉";
+const nameText = "💖 Dear Sachin 💖";
+let i = 0, j = 0;
+
+/* 🎵 Music Logic */
+const songs = [
+    document.getElementById("music1"),
+    document.getElementById("music2"),
+    document.getElementById("music3")
+];
+
+const extraSong = document.getElementById("music4"); // Extra song
+let currentSong = 0;
+let isPlaying = false;
+
+function stopAllSongs() {
+    songs.forEach(song => {
+        song.pause();
+        song.currentTime = 0;
+    });
+    extraSong.pause();
+    extraSong.currentTime = 0;
+}
+
+function playSong(index) {
+    stopAllSongs();
+    currentSong = index;
+    songs[currentSong].play();
+    isPlaying = true;
+}
+
+function togglePlay() {
+    if (isPlaying) {
+        songs[currentSong].pause();
+        isPlaying = false;
+    } else {
+        songs[currentSong].play();
+        isPlaying = true;
+    }
+}
+
+// Play extra song on button tap
+function playExtraSong() {
+    stopAllSongs();
+    extraSong.play();
+    isPlaying = true;
+}
+
+/* Auto play next song when current ends */
+songs.forEach((song) => {
+    song.addEventListener('ended', () => {
+        currentSong = (currentSong + 1) % songs.length;
+        playSong(currentSong);
+    });
+});
+
+/* 🎆 Typing + Effects */
+function typeBirthday() {
+    if (i < birthdayText.length) {
+        document.getElementById("typingText").innerHTML += birthdayText[i++];
+        setTimeout(typeBirthday, 120);
+    } else {
+        setTimeout(typeName, 600);
+    }
+}
+
+function typeName() {
+    if (j < nameText.length) {
+        document.getElementById("nameText").innerHTML += nameText[j++];
+        setTimeout(typeName, 120);
+    } else {
+        startFireworks();
+        startConfetti(); // Start infinite confetti
+    }
+}
+
+function startFireworks() {
+    for (let i = 0; i < 80; i++) {
+        let fw = document.createElement("div");
+        fw.className = "firework";
+        fw.style.left = "50vw";
+        fw.style.top = "50vh";
+        fw.style.background = `hsl(${Math.random()*360},100%,50%)`;
+        fw.style.setProperty("--x", `${Math.random()*400-200}px`);
+        fw.style.setProperty("--y", `${Math.random()*400-200}px`);
+        document.body.appendChild(fw);
+        setTimeout(() => fw.remove(), 1000);
+    }
+}
+
+// Infinite confetti
+function startConfetti() {
+    setInterval(() => {
+        let conf = document.createElement("div");
+        conf.className = "confetti";
+        conf.style.left = Math.random()*100 + "vw";
+        conf.style.backgroundColor = `hsl(${Math.random()*360},100%,50%)`;
+        conf.style.animationDuration = Math.random()*3+2+"s";
+        document.body.appendChild(conf);
+
+        // Remove confetti after animation to avoid memory leak
+        setTimeout(() => conf.remove(), 5000);
+    }, 200); // Generate new confetti every 200ms
+}
+
+function startShow() {
+    typeBirthday();
+    playSong(currentSong); // Auto play first song
+}
+</script>
+
+</body>
+</html>
